@@ -1,7 +1,8 @@
 import streamlit as st
 from openai import OpenAI
 from streamlit_openai import Chat
-from langchain.chat_models import ChatOpenAI
+#from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.schema import AIMessage, HumanMessage
 
 #Link to Open AI API
