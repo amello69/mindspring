@@ -4,9 +4,12 @@ from streamlit_openai import Chat
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import AIMessage, HumanMessage
 
-# Securely load Lambda credentials from secrets
-LAMBDA_KEY = st.secrets["LAMBDA"]["API_KEY"]
-BASE_URL = st.secrets["LAMBDA"]["BASE_URL"]
+#Link to Open AI API
+@st.cache_resource
+def get_openai_client():
+    return OpenAI(api_key=st.secrets["OPENAI"]["API_KEY"])
+
+client = get_openai_client()
 
 # Cache the OpenAI-compatible client to avoid reinitialization
 @st.cache_resource
@@ -21,7 +24,7 @@ st.title("📝 English Tutor (Phase 1)")
 if "chat" not in st.session_state:
     st.session_state.chat = Chat(
         client=client,
-        model="llama-3.1-8b-instruct",
+        model="gpt-4.1-nano",
         placeholder="Ask your English question…",
         show_clear_button=True
     )
