@@ -30,11 +30,15 @@ if prompt := st.chat_input("Ask your English question..."):
         st.write(prompt)
 
     # Call GPT-4.1-nano
-    response = client.chat.completions.create(
-        model="gpt-4.1-nano",
-        messages=st.session_state.messages,
-        stream=False
-    )
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4.1-nano",
+            messages=st.session_state.messages,
+            stream=False
+        )
+    except Exception as e:
+        st.error(f"API call failed: {e}")
+        raise
     reply = response.choices[0].message.content
     st.session_state.messages.append({"role": "assistant", "content": reply})
 
