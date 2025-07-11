@@ -1,4 +1,6 @@
 openai
-streamlit
 langchain-openai
+langchain>=0.0.305
+openai>=0.27.0
+streamlit
 streamlit-openai
