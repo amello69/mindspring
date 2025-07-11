@@ -22,7 +22,11 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
-
+        
+# ensure total_tokens is initialized
+if "total_tokens" not in st.session_state:
+    st.session_state.total_tokens = 0
+    
 # Accept user input
 if prompt := st.chat_input("Ask your English question..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -41,17 +45,19 @@ if prompt := st.chat_input("Ask your English question..."):
         raise
     reply = response.choices[0].message.content
     st.session_state.messages.append({"role": "assistant", "content": reply})
-
     with st.chat_message("assistant"):
         st.write(reply)
 
     # Show token usage metrics
-    ut = response.usage
-    st.sidebar.markdown(
-        f"**Last session tokens:** 🎯 " 
-        f"{ut['prompt_tokens']} in + {ut['completion_tokens']} out = {ut['total_tokens']} total"
-    )
-    st.session_state.total_tokens = st.session_state.get("total_tokens", 0) + ut["total_tokens"]
+    # Safely extract usage only if available
+ut = getattr(response, "usage", None)
+if ut:
+    prompt_toks = ut.get("prompt_tokens", 0)
+    completion_toks = ut.get("completion_tokens", 0)
+    total = prompt_toks + completion_toks
+    st.session_state.total_tokens += total
     cost = st.session_state.total_tokens * (0.10 + 0.40) / 1_000_000
-    st.sidebar.markdown(f"**Total tokens**: {st.session_state.total_tokens}")
-    st.sidebar.markdown(f"**Est. cost**: ${cost:.4f}")
+
+    st.sidebar.markdown(f"**Last session tokens:** {prompt_toks} in + {completion_toks} out = {total}")
+    st.sidebar.markdown(f"**Total tokens so far:** {st.session_state.total_tokens}")
+    st.sidebar.markdown(f"**Estimated cost:** ${cost:.4f}")
