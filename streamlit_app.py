@@ -1,13 +1,12 @@
-import sys
-import os
+# streamlit_app.py
 import streamlit as st
 import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 
-# Load credentials file
-with open("credentials.yaml") as file:
-    config = yaml.load(file, Loader=SafeLoader)
+# Load credentials and create authenticator
+with open("credentials.yaml") as f:
+    config = yaml.load(f, Loader=SafeLoader)
 
 authenticator = stauth.Authenticate(
     config["credentials"],
@@ -15,55 +14,27 @@ authenticator = stauth.Authenticate(
     config["cookie"]["key"],
     config["cookie"]["expiry_days"],
     config.get("preauthorized"),
-    auto_hash=False
+    auto_hash=False  # Set according to your use of hashed passwords
 )
 
-# Render login widget
-# name, auth_status, username = authenticator.login("main")
+# Show login in the main area
 authenticator.login(location="main")
-# Then read the status from session_state
+
+# Check login status in session_state
 status = st.session_state.get("authentication_status")
-name = st.session_state.get("name")
-username = st.session_state.get("username")
+name = st.session_state.get("name", "")
 
-if status:
-    st.sidebar.success(f"Welcome {name}")
-elif status is False:
-    st.sidebar.error("Incorrect username or password")
-    st.stop()
-else:
-    st.sidebar.warning("Please log in to continue")
+if not status:
+    # Not authenticated—you'll remain on login page
     st.stop()
 
+# ✅ User is authenticated — proceed to multipage navigation
+from pages import profile, tutor
 
-
-if not auth_status:
-    st.warning("Please log in.")
-    st.stop()
-
-# Make shared modules importable from 'pages/' by adding the project root to sys.path
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-
-# Now you can safely import auth_utils or other shared modules
-from auth_utils import login
-
-# Authentication wrapper
-login()
-
-# If not logged in, display welcome screen and stop
-if not st.session_state.get("logged_in"):
-    st.title("🌱 Welcome to English Tutor")
-    st.write("Please log in to continue.")
-    st.stop()
-
-# Import pages now that the path is set
-import pages.tutor as tutor_page
-import pages.profile as profile_page
-
-# Configure navigation
-pagelist = [
-    st.Page(tutor_page.run, title="Tutor", icon="🗣️", default=True),
-    st.Page(profile_page.run, title="Profile", icon="👤")
+pages = [
+    st.Page(profile.run, title="Profile", icon="👤", default=True),
+    st.Page(tutor.run, title="Tutor", icon="🗣️")
 ]
-page = st.navigation(pagelist, position="sidebar")
+
+page = st.navigation(pages, position="sidebar")
 page.run()
