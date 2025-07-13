@@ -8,10 +8,17 @@ if "logged_in_user" not in st.session_state:
     st.warning("Please log in from the main page.")
     st.stop()
 
-st.title("🗣️ AI English Tutor")
+st.title("🗣️ English Tutor")
 username = st.session_state.get("logged_in_user", "")
 name = st.session_state.get("logged_in_name", "")
 st.write(f"Hello, **{name}** (username: `{username}`)! Ready to start?")
+
+tokens_remaining = st.session_state.get("tokens_remaining", 0)
+st.sidebar.markdown(f"**Tokens remaining:** {tokens_remaining}")
+
+if tokens_remaining <= 0:
+    st.error("You have exhausted your monthly tokens. Please purchase more.")
+    st.stop()
 
 user_input = st.text_area("Ask your tutor anything:")
 
