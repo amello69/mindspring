@@ -18,7 +18,21 @@ authenticator = stauth.Authenticate(
 )
 
 # Render login widget
-name, auth_status, username = authenticator.login("main")
+# name, auth_status, username = authenticator.login("main")
+authenticator.login(location="main")
+# Then read the status from session_state
+status = st.session_state.get("authentication_status")
+name = st.session_state.get("name")
+username = st.session_state.get("username")
+
+if status:
+    st.sidebar.success(f"Welcome {name}")
+elif status is False:
+    st.sidebar.error("Incorrect username or password")
+    st.stop()
+else:
+    st.sidebar.warning("Please log in to continue")
+    st.stop()
 
 
 
