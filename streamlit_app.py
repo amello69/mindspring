@@ -28,5 +28,5 @@ pages = [
     st.Page(tutor.run, title="Tutor", icon="🗣️"),
 ]
 
-page = st.navigation(pages, position="sidebar")
-page.run()
+current_page = st.navigation(pages, position="sidebar")
+current_page.run()
