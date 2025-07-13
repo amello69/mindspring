@@ -15,4 +15,3 @@ if st.button("Submit"):
         st.write(f"🤖 Tutor: Here's a helpful answer to '{user_input}'")
     else:
         st.warning("Please enter a question or topic.")
-
