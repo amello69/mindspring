@@ -4,6 +4,9 @@ from openai import OpenAI
 # Load API key securely from secrets.toml
 client = OpenAI(api_key=st.secrets["OPENAI"]["API_KEY"])
 
+# Test to see if we are getting the key:
+st.write("API key from secrets:", st.secrets["OPENAI"]["API_KEY"])
+
 if "logged_in_user" not in st.session_state:
     st.warning("Please log in from the main page.")
     st.stop()
