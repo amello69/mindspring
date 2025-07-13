@@ -18,14 +18,8 @@ authenticator = stauth.Authenticate(
 )
 
 # Render login widget
-name, auth_status, username = authenticator.login(
-    location="main",
-    fields={
-        "username": "Username",
-        "password": "Password",
-        "login_button": "Login"
-    }
-)
+name, auth_status, username = authenticator.login("main")
+
 
 
 if not auth_status:
