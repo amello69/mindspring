@@ -1,6 +1,28 @@
 import sys
 import os
 import streamlit as st
+import yaml
+from yaml.loader import SafeLoader
+import streamlit_authenticator as stauth
+
+# Load credentials file
+with open("credentials.yaml") as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    config["credentials"],
+    config["cookie"]["name"],
+    config["cookie"]["key"],
+    config["cookie"]["expiry_days"],
+    config.get("preauthorized")
+)
+
+# Render login widget
+name, auth_status, username = authenticator.login("Login", "main")
+
+if not auth_status:
+    st.warning("Please log in.")
+    st.stop()
 
 # Make shared modules importable from 'pages/' by adding the project root to sys.path
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
