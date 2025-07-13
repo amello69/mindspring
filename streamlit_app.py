@@ -18,7 +18,15 @@ authenticator = stauth.Authenticate(
 )
 
 # Render login widget
-name, auth_status, username = authenticator.login("Login", "main")
+name, auth_status, username = authenticator.login(
+    location="main",
+    fields={
+        "username": "Username",
+        "password": "Password",
+        "login_button": "Login"
+    }
+)
+
 
 if not auth_status:
     st.warning("Please log in.")
