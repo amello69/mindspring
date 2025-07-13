@@ -3,6 +3,7 @@ import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 
+# Load credentials
 with open("credentials.yaml") as f:
     config = yaml.load(f, Loader=SafeLoader)
 
@@ -17,11 +18,12 @@ authenticator = stauth.Authenticate(
 authenticator.login(location="main")
 
 status = st.session_state.get("authentication_status")
+
 if status is True:
     if "logged_in_user" not in st.session_state:
         st.session_state["logged_in_user"] = st.session_state.get("username", "")
         st.session_state["logged_in_name"] = st.session_state.get("name", "")
-    st.success(f"Welcome {st.session_state['logged_in_name']}!")
+    st.success(f"Welcome, {st.session_state['logged_in_name']}!")
 elif status is False:
     st.error("Incorrect username/password")
     st.stop()
