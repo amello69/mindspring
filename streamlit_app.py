@@ -17,14 +17,21 @@ authenticator = stauth.Authenticate(
 
 authenticator.login(location="main")
 
-if not st.session_state.get("authentication_status"):
+status = st.session_state.get("authentication_status")
+
+if status is True:
+    # ✅ Save stable session values you control
+    if "logged_in_user" not in st.session_state:
+        st.session_state["logged_in_user"] = st.session_state.get("username", "")
+        st.session_state["logged_in_name"] = st.session_state.get("name", "")
+elif status is False:
+    st.error("Incorrect username/password")
+    st.stop()
+else:
+    st.warning("Please log in to continue")
     st.stop()
 
-# Streamlit's st.navigation actually expects st.Page objects that are either:
-#   - functions (like page_profile) with unique signatures
-#   - or file paths with Python scripts containing `if __name__ == "__page__":` blocks
-
-# Safer fallback using string file paths:
+# --- Navigation after login ---
 pages = [
     "pages/profile.py",
     "pages/tutor.py"
