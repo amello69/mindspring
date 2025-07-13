@@ -7,7 +7,7 @@ if "logged_in_user" not in st.session_state:
     st.warning("Please log in from the main page.")
     st.stop()
 
-st.title("🗣️ AI English Tutor")
+st.title("🗣️ English Tutor")
 
 username = st.session_state.get("logged_in_user", "")
 name = st.session_state.get("logged_in_name", "")
