@@ -63,3 +63,23 @@ if st.button("Submit"):
             st.session_state["my_input_box"] = ""
     else:
         st.warning("Please enter a question.")
+
+# ✅ Ensure key exists
+if "my_input_box" not in st.session_state:
+    st.session_state["my_input_box"] = ""
+
+user_input = st.text_area(
+    "Ask your tutor anything:",
+    value=st.session_state["my_input_box"],
+    key="my_input_box"
+)
+
+if st.button("Submit"):
+    if user_input.strip():
+        with st.spinner("Thinking..."):
+            # ... [existing tutor logic] ...
+            # After appending to chat history & deducting tokens
+            st.session_state["my_input_box"] = ""  # clear for next input
+    else:
+        st.warning("Please enter a question.")
+
