@@ -22,6 +22,11 @@ if tokens_remaining <= 0:
     st.error("You have exhausted your monthly tokens. Please purchase more.")
     st.stop()
 
+# ✅ Add a clear chat button
+if st.button("🗑️ Clear Chat"):
+    st.session_state["chat_history"] = []
+    st.success("Chat history cleared!")
+
 # Display the chat history
 for chat in st.session_state["chat_history"]:
     if chat["role"] == "user":
