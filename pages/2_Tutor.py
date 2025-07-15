@@ -63,6 +63,5 @@ with st.form(key="input_form", clear_on_submit=True):
                 st.session_state["tokens_remaining"] -= tokens_used
                 st.success(f"Tokens used: {tokens_used}. Remaining: {st.session_state['tokens_remaining']}")
             # Clear input after submit
-            st.session_state["input_text"] = ""
         else:
             st.warning("Please enter a question.")
