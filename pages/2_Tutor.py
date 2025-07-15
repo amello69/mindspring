@@ -23,11 +23,38 @@ tokens_remaining = st.session_state.get("tokens_remaining", 0)
 
 st.sidebar.markdown(f"**Tokens remaining:** {tokens_remaining}")
 
-if tokens_remaining <= 0:
-    st.error("You have exhausted your monthly tokens. Please purchase more.")
-    st.stop()
-
-# --- Clear chat button ---
+# --- Always allow clearing chat
 if st.button("🗑️ Clear Chat"):
     st.session_state["chat_history"] = []
-    st.success
+    st.success("Chat history cleared!")
+
+# --- Show conversation history ---
+for chat in st.session_state["chat_history"]:
+    if chat["role"] == "user":
+        st.write(f"📝 **You:** {chat['content']}")
+    else:
+        st.write(f"🤖 **Tutor:** {chat['content']}")
+
+# --- Only disable input if out of tokens
+if tokens_remaining <= 0:
+    st.error("You have exhausted your monthly tokens. Please purchase more to continue.")
+    disable_input = True
+else:
+    disable_input = False
+
+# --- Input with key bump trick
+input_key = f"my_input_box_{st.session_state['input_key_counter']}"
+user_input = st.text_area("Ask your tutor anything:", key=input_key, disabled=disable_input)
+
+if st.button("Submit", disabled=disable_input):
+    if user_input.strip():
+        with st.spinner("Thinking..."):
+            # Build conversation context
+            messages = [{"role": "system", "content": "You are an English tutor. Answer clearly and helpfully."}]
+            for past in st.session_state["chat_history"]:
+                messages.append({"role": past["role"], "content": past["content"]})
+            messages.append({"role": "user", "content": user_input})
+
+            # Call the AI
+            response = client.chat.completions.create(
+                mo
