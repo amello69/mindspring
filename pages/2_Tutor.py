@@ -73,5 +73,17 @@ if st.button("Submit", disabled=disable_input):
             )
             answer = response.choices[0].message.content
 
-            st.session_state["chat_history"].append({"role": "user",
-
+            st.session_state["chat_history"].append({"role": "user", "content": user_input})
+            st.session_state["chat_history"].append({"role": "assistant", "content": answer})
+
+            tokens_used = len(user_input.split()) // 2 + len(answer.split()) // 2
+            st.session_state["tokens_remaining"] -= tokens_used
+            st.success(f"Tokens used: {tokens_used}. Remaining: {st.session_state['tokens_remaining']}")
+
+            write_history_to_file(st.session_state["chat_history"])
+
+        # Clear input after submit
+        st.session_state["user_input"] = ""
+        st.experimental_rerun()  # Rerun to update transcript and clear input
+    else:
+        st.warning("Please enter a question.")
