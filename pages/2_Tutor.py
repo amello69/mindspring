@@ -51,14 +51,6 @@ disable_input = tokens_remaining <= 0
 if disable_input:
     st.error("You have exhausted your monthly tokens. Please purchase more to continue.")
 
-user_input = st.text_area(
-    "Ask your tutor anything:",
-    key="user_input",
-    value=st.session_state["user_input"],
-    disabled=disable_input,
-    height=80,
-)
-
 if st.button("Submit", disabled=disable_input):
     if user_input.strip():
         with st.spinner("Thinking..."):
@@ -87,3 +79,10 @@ if st.button("Submit", disabled=disable_input):
         st.experimental_rerun()  # Rerun to update transcript and clear input
     else:
         st.warning("Please enter a question.")
+    user_input = st.text_area(
+    "Ask your tutor anything:",
+    key="user_input",
+    value=st.session_state["user_input"],
+    disabled=disable_input,
+    height=80,
+)
