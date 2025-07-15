@@ -30,7 +30,7 @@ tokens_remaining = st.session_state.get("tokens_remaining", 0)
 
 st.sidebar.markdown(f"**Tokens remaining:** {tokens_remaining}")
 
-# --- Always allow clearing chat
+# --- Always allow clearing chat ---
 if st.button("🗑️ Clear Chat"):
     st.session_state["chat_history"] = []
     st.success("Chat history cleared!")
@@ -72,12 +72,15 @@ if st.button("Submit", disabled=disable_input):
             st.session_state["chat_history"].append({"role": "user", "content": user_input})
             st.session_state["chat_history"].append({"role": "assistant", "content": answer})
 
+            # ✅ Show immediate response before rerun
+            st.write(f"🤖 **Tutor:** {answer}")
+
             # Update tokens
             tokens_used = len(user_input.split()) // 2 + len(answer.split()) // 2
             st.session_state["tokens_remaining"] -= tokens_used
             st.success(f"Tokens used: {tokens_used}. Remaining: {st.session_state['tokens_remaining']}")
 
-            # ✅ Set flag to increment key on next run
+            # Set flag to increment key on next run
             st.session_state["trigger_new_input"] = True
     else:
         st.warning("Please enter a question.")
