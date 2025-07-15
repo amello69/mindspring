@@ -62,9 +62,9 @@ with st.container():
                 st.session_state["chat_history"].append({"role": "assistant", "content": answer})
 
                 # ✅ Increment key immediately to shift input below on this run
-                st.session_state["input_key_counter"] += 1
+                #st.session_state["input_key_counter"] += 1
 
-                st.write(f"🤖 **Tutor:** {answer}")
+                #st.write(f"🤖 **Tutor:** {answer}")
 
                 tokens_used = len(user_input.split()) // 2 + len(answer.split()) // 2
                 st.session_state["tokens_remaining"] -= tokens_used
