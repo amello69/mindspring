@@ -63,5 +63,5 @@ if st.session_state.get("pending_user_input"):
         tokens_used = len(user_input.split()) // 2 + len(answer.split()) // 2
         st.session_state["tokens_remaining"] -= tokens_used
         st.success(f"Tokens used: {tokens_used}. Remaining: {st.session_state['tokens_remaining']}")
-    # Clear the flag
+    # Clear the flag so this block only runs once per submit
     st.session_state["pending_user_input"] = None
