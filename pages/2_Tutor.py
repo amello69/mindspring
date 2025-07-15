@@ -3,6 +3,19 @@ from openai import OpenAI
 
 client = OpenAI(api_key=st.secrets["OPENAI"]["API_KEY"])
 
+def write_history_to_file(history, filename="chat_history.txt"):
+    with open(filename, "w", encoding="utf-8") as f:
+        for chat in history:
+            role = "You" if chat["role"] == "user" else "Tutor"
+            f.write(f"{role}: {chat['content']}\n")
+
+def read_history_from_file(filename="chat_history.txt"):
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        return ""
+
 if "logged_in_user" not in st.session_state:
     st.warning("Please log in from the main page.")
     st.stop()
@@ -19,13 +32,14 @@ st.sidebar.markdown(f"**Tokens remaining:** {tokens_remaining}")
 
 if st.button("🗑️ Clear Chat"):
     st.session_state["chat_history"] = []
+    write_history_to_file(st.session_state["chat_history"])  # clear file too
     st.success("Chat history cleared!")
 
-for chat in st.session_state["chat_history"]:
-    if chat["role"] == "user":
-        st.write(f"📝 **You:** {chat['content']}")
-    else:
-        st.write(f"🤖 **Tutor:** {chat['content']}")
+# --- Always write history to file and display it above the form
+write_history_to_file(st.session_state["chat_history"])
+history_text = read_history_from_file()
+st.subheader("Chat Transcript")
+st.text(history_text)
 
 disable_input = tokens_remaining <= 0
 if disable_input:
@@ -63,5 +77,8 @@ if st.session_state.get("pending_user_input"):
         tokens_used = len(user_input.split()) // 2 + len(answer.split()) // 2
         st.session_state["tokens_remaining"] -= tokens_used
         st.success(f"Tokens used: {tokens_used}. Remaining: {st.session_state['tokens_remaining']}")
-    # Clear the flag so this block only runs once per submit
+
+        # Write updated history after each response
+        write_history_to_file(st.session_state["chat_history"])
+
     st.session_state["pending_user_input"] = None
