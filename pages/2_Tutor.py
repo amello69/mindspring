@@ -57,4 +57,22 @@ if st.button("Submit", disabled=disable_input):
 
             # Call the AI
             response = client.chat.completions.create(
-                mo
+                model="gpt-4.1-nano",
+                messages=messages
+            )
+            answer = response.choices[0].message.content
+
+            # Update history
+            st.session_state["chat_history"].append({"role": "user", "content": user_input})
+            st.session_state["chat_history"].append({"role": "assistant", "content": answer})
+
+            # Deduct tokens
+            tokens_used = len(user_input.split()) // 2 + len(answer.split()) // 2
+            st.session_state["tokens_remaining"] -= tokens_used
+            st.success(f"Tokens used: {tokens_used}. Remaining: {st.session_state['tokens_remaining']}")
+
+            # Increment input key to clear on rerun
+            st.session_state["input_key_counter"] += 1
+            st.experimental_rerun()
+    else:
+        st.warning("Please enter a question.")
