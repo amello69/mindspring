@@ -9,11 +9,18 @@ if "logged_in_user" not in st.session_state:
     st.warning("Please log in from the main page.")
     st.stop()
 
-# --- Init states ---
+# --- Init session state ---
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
 if "input_key_counter" not in st.session_state:
     st.session_state["input_key_counter"] = 0
+if "trigger_new_input" not in st.session_state:
+    st.session_state["trigger_new_input"] = False
+
+# --- On rerun, if flagged, increment key to reset input box ---
+if st.session_state["trigger_new_input"]:
+    st.session_state["input_key_counter"] += 1
+    st.session_state["trigger_new_input"] = False
 
 st.title("🗣️ AI English Tutor")
 
@@ -28,34 +35,33 @@ if st.button("🗑️ Clear Chat"):
     st.session_state["chat_history"] = []
     st.success("Chat history cleared!")
 
-# --- Show conversation history ---
+# --- Display chat history ---
 for chat in st.session_state["chat_history"]:
     if chat["role"] == "user":
         st.write(f"📝 **You:** {chat['content']}")
     else:
         st.write(f"🤖 **Tutor:** {chat['content']}")
 
-# --- Only disable input if out of tokens
-if tokens_remaining <= 0:
+# --- Only disable input if out of tokens ---
+disable_input = tokens_remaining <= 0
+if disable_input:
     st.error("You have exhausted your monthly tokens. Please purchase more to continue.")
-    disable_input = True
-else:
-    disable_input = False
 
-# --- Input with key bump trick
+# --- Controlled input box with key bump trick ---
 input_key = f"my_input_box_{st.session_state['input_key_counter']}"
 user_input = st.text_area("Ask your tutor anything:", key=input_key, disabled=disable_input)
 
+# --- Submit button ---
 if st.button("Submit", disabled=disable_input):
     if user_input.strip():
         with st.spinner("Thinking..."):
-            # Build conversation context
+            # Build conversation
             messages = [{"role": "system", "content": "You are an English tutor. Answer clearly and helpfully."}]
             for past in st.session_state["chat_history"]:
                 messages.append({"role": past["role"], "content": past["content"]})
             messages.append({"role": "user", "content": user_input})
 
-            # Call the AI
+            # Call OpenAI
             response = client.chat.completions.create(
                 model="gpt-4.1-nano",
                 messages=messages
@@ -66,13 +72,12 @@ if st.button("Submit", disabled=disable_input):
             st.session_state["chat_history"].append({"role": "user", "content": user_input})
             st.session_state["chat_history"].append({"role": "assistant", "content": answer})
 
-            # Deduct tokens
+            # Update tokens
             tokens_used = len(user_input.split()) // 2 + len(answer.split()) // 2
             st.session_state["tokens_remaining"] -= tokens_used
             st.success(f"Tokens used: {tokens_used}. Remaining: {st.session_state['tokens_remaining']}")
 
-            # Increment input key to clear on rerun
-            st.session_state["input_key_counter"] += 1
-            st.experimental_rerun()
+            # ✅ Set flag to increment key on next run
+            st.session_state["trigger_new_input"] = True
     else:
         st.warning("Please enter a question.")
