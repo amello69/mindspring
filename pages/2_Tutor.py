@@ -69,5 +69,7 @@ with st.container():
                 tokens_used = len(user_input.split()) // 2 + len(answer.split()) // 2
                 st.session_state["tokens_remaining"] -= tokens_used
                 st.success(f"Tokens used: {tokens_used}. Remaining: {st.session_state['tokens_remaining']}")
+                st.session_state["input_key_counter"] += 1
+                st.experimental_rerun()
         else:
             st.warning("Please enter a question.")
